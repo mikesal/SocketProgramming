@@ -12,6 +12,24 @@ def accept_wrapper(sock):
 	events = selectors.EVENT_READ | selectors.EVENT_WRITE
 	sel.register(conn, events, data=data)
 
+def service_connect(key, mask):
+	sock = key.fileobj
+	data = key.data
+	if mask & selectors.EVENT_READ:
+		recv_data = sock.recv(1024)
+		if recv_data:
+			data.outb += recv_data
+		else:
+			print('closing connection to', data.addr)
+			sel.unregister(sock)
+			sock.close()
+	if mask & selectors.EVENT_WRITE:
+		if data.outb:
+			print('echoing', repr(data.outb), 'to', data.addr)
+			sent = sock.send(data.outb)
+			data.outb = data.outb[sent:]
+
+
 host = '127.0.0.1'
 port = 65432
 
