@@ -29,7 +29,6 @@ def service_connect(key, mask):
 			sent = sock.send(data.outb)
 			data.outb = data.outb[sent:]
 
-
 host = '127.0.0.1'
 port = 65432
 
